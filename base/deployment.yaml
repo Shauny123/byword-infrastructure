@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: byword-intake
+  namespace: byword-system
+  labels:
+    app: byword-intake
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: byword-intake
+  template:
+    metadata:
+      labels:
+        app: byword-intake
+    spec:
+      containers:
+        - name: byword-container
+          image: gcr.io/durable-trainer-466014-h8/byword-intake:latest
+          ports:
+            - containerPort: 8080
