@@ -1,0 +1,12 @@
+# kubernetes/base/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: byword-infrastructure
+  app.kubernetes.io/managed-by: flux
+
+namespace: byword
