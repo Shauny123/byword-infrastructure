@@ -1,22 +1,21 @@
-# terraform/variables.tf
 variable "project_id" {
   description = "GCP Project ID"
   type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+  validation {
+    condition     = contains(["development", "staging", "production"], var.environment)
+    error_message = "Environment must be one of: development, staging, production."
+  }
 }
 
 variable "region" {
   description = "GCP Region"
   type        = string
   default     = "us-central1"
-}
-
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  validation {
-    condition     = contains(["development", "staging", "production"], var.environment)
-    error_message = "Environment must be one of: development, staging, production."
-  }
 }
 
 variable "subnet_cidr" {
