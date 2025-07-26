@@ -1,43 +1,34 @@
-
-resource "google_compute_subnetwork" "subnet" {
-  name          = "${var.environment}-subnet"
-  ip_cidr_range = var.subnet_cidr
-  region        = var.region
-  network       = google_compute_network.vpc_network.id
+provider "google" {
+  project = var.project_id
+  region  = var.region
 }
 
-resource "google_container_cluster" "gke_cluster" {
-  name               = "${var.environment}-gke-cluster"
-  location           = var.region
-  remove_default_node_pool = true
-  initial_node_count       = 1
-
-  network    = google_compute_network.vpc_network.name
-  subnetwork = google_compute_subnetwork.subnet.name
-
-  ip_allocation_policy {
-    cluster_secondary_range_name  = "pods"
-    services_secondary_range_name = "services"
+terraform {
+  backend "gcs" {
+    bucket  = "byword-terraform-state"
+    prefix  = "infrastructure"
   }
 
-  private_cluster_config {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
-    master_ipv4_cidr_block  = var.master_cidr
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0"
+    }
   }
+
+  required_version = ">= 1.0"
 }
 
-resource "google_container_node_pool" "primary_nodes" {
-  name       = "primary-node-pool"
-  cluster    = google_container_cluster.gke_cluster.name
-  location   = var.region
-
-  node_config {
-    machine_type = "e2-medium"
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-  }
-
-  initial_node_count = 2
+resource "google_compute_network" "vpc_network" {
+  name = "${var.environment}-vpc"
+  auto_create_subnetworks = true
 }
+
+# Example: Deploying Cloud Run service infrastructure (optional block)
+# module "cloud_run_service" {
+#   source     = "./modules/cloud_run"
+#   project_id = var.project_id
+#   region     = var.region
+#   service_name = "intake-api"
+#   image       = "gcr.io/${var.project_id}/byword-voicelaw-ai"
+# }
