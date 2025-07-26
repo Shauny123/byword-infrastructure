@@ -1,11 +1,3 @@
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
-
-resource "google_compute_network" "vpc_network" {
-  name = "${var.environment}-vpc"
-}
 
 resource "google_compute_subnetwork" "subnet" {
   name          = "${var.environment}-subnet"
